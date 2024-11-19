@@ -28,8 +28,7 @@ class SudokuGenerator:
         self.row_length = row_length
         self.removed_cells = removed_cells
         self.board = [[0 for i in range(9)] for i in range(9)]
-        #self.box_length = int(self.row_length ** 1/2)
-        self.box_length = 3
+        self.box_length = int(self.row_length ** .5)
 
     '''
 	Returns a 2D python list of numbers which represents the board
@@ -136,7 +135,7 @@ class SudokuGenerator:
     '''
 
     def fill_box(self, row_start, col_start):
-        nums = [i for i in range(self.row_length+1)]
+        nums = [i for i in range(1, self.row_length+1)]
         for i in range(row_start, row_start + self.box_length):
             for j in range(col_start, col_start + self.box_length):
                     length = int(len(nums))+1
@@ -258,9 +257,9 @@ def generate_sudoku(size, removed):
     board = sudoku.get_board()
     return board
 
-if __name__ == "__main__":
-    game = generate_sudoku(9, 20)
-    for row in game:
-        for cell in row:
-            print(cell, end=' ')
-        print()
+# if __name__ == "__main__":
+#     game = generate_sudoku(9, 30)
+#     for row in game:
+#         for cell in row:
+#             print(cell, end=' ')
+#         print()
