@@ -20,8 +20,6 @@ class Menu:
         self.font_color = (0, 0, 0) # black
         self.background_color = (255, 255, 255) # white
 
-        self.button_font_size = 30
-
         # Checks the current menu that Menu is on
         self.current_menu = "main menu"
 
@@ -125,6 +123,34 @@ class Menu:
             self.button_medium.draw()
             self.button_hard.draw()
 
+    class Sudoku:
+        # Draws sudoku board and menu buttons below sudoku board
+        def __init__(self):
+            pass
+
+    class GameOver:
+        def __init__(self, user_won: bool):
+            self.user_won = user_won
+
+        def render_text(self, font_size=30):
+            '''
+            Renders game over text to user. The game over text will depend on if the user won or lost
+            '''
+            text = ''
+            if user_won:
+                text = 'Game Won!'
+            else:
+                text = 'Game Over :('
+
+            # Create font of text
+            font = pygame.font.Font(None, font_size)
+            img = font.render(text, True, text)
+
+            # Render title in the center (for x) and in the top quarter (for y)
+            x = (self.screen.get_width() - img.get_width()) / 2
+            y = (self.screen.get_height() - img.get_height()) / 4
+
+            self.screen.blit(img, (x, y))
 
 def test_function(difficulty):
     print(difficulty)
