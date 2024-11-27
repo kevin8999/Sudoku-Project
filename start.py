@@ -159,12 +159,13 @@ class Button:
         self.button_surface = pygame.Surface((self.width, self.height))
         self.button_surface.fill(self.fill_colors['normal'])
 
+        # Create text for button
         font = pygame.font.Font(None, self.font_size)
         self.img = font.render(self.button_text, True, self.font_color)
 
         # Calculate text position to center it within the button
-        self.text_x = self.x + (self.width - self.img.get_width()) // 2
-        self.text_y = self.y + (self.height - self.img.get_height()) // 2
+        self.text_x = (self.width - self.img.get_width()) // 2
+        self.text_y = (self.height - self.img.get_height()) // 2
 
         self.button_rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
