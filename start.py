@@ -20,6 +20,11 @@ class Menu:
         self.font_color = (0, 0, 0) # black
         self.background_color = (255, 255, 255) # white
 
+        self.button_font_size = 30
+
+        # Checks the current menu that Menu is on
+        self.current_menu = "main menu"
+
     def render_main_menu(self):
         """
         Render the main menu
@@ -27,9 +32,11 @@ class Menu:
         self.screen.fill(self.background_color)
 
         # Render text of main menu
-        self.main_menu = self.MainMenu(self.screen, self.font_color, self.background_color)
+        self.main_menu = self.MainMenu(self.screen, self.font_color, self.background_color, self.button_font_size)
         self.main_menu.render_title()
         self.main_menu.render_selection_difficulty()
+
+        self.current_menu = "main menu"
 
     class MainMenu:
         """
@@ -42,13 +49,16 @@ class Menu:
             None
         """
 
-        def __init__(self, screen, font_color, background_color):
+        def __init__(self, screen, font_color, background_color, button_font_size):
             self.font_color = font_color
             self.background_color = background_color
             self.screen = screen
 
             self.title = "Welcome to Sudoku!"
             self.select_game_mode = "Select Game Mode:"
+            self.button_font_size = button_font_size
+
+            self.create_buttons()
 
         def render_title(self, font_size=70) -> None:
             """
@@ -81,36 +91,89 @@ class Menu:
             self.screen.blit(img, (x, y))
 
             # Render difficulty buttons to screen
+            self.button_easy.process()
+        
+        def create_buttons(self):
+            self.button_easy = Button(
+                screen=self.screen,
+                x=(self.screen.get_width()) * 1/4,
+                y=(self.screen.get_height()) * 3/4,
+                width=100,
+                height=self.button_font_size * 1.25,
+                button_text="Easy",
+                on_click_function=test_function
+            )
 
+def test_function():
+    print("this button works!")
 
 class Button:
     '''
     Creates clickable buttons. Also defines default themes for clickable buttons.
     '''
 
-    def __init__(self, x, y, width, height, button_text, on_click_function, one_press=True):
+    def __init__(self, screen, x, y, width, height, button_text, on_click_function=None, one_press=True, fill_colors=None, font_size=30):
+        self.screen = screen
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.on_click_function = on_click_function
-        self.one_press = one_press # Can this button only be clicked once?
-        self.already_pressed = False
+        self.clicked = False
 
-    def render(self):
-        '''
-        Renders button to screen
-        '''
+        if fill_colors == None:
+            self.fill_colors = {
+                'normal'  : '#ffffff',
+                'hover'   : '#666666',
+                'pressed' : '#333333'
+            }
+
+        font = pygame.font.Font(None, font_size)
+        self.button_text = font.render(button_text, True, (0,0,0))
+
         self.button_surface = pygame.Surface((self.width, self.height))
         self.button_rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
+    def process(self):
+        mouse_pos = pygame.mouse.get_pos()
+        self.button_surface.fill(self.fill_colors['normal'])
+
+        # If mouse is inside button_rect, change the button color to hover
+        if self.button_rect.collidepoint(mouse_pos):
+            self.button_surface.fill(self.fill_colors['hover'])
+
+            # If the left mouse button is clicked while inside button_rect, call on_click_function() ONCE.
+            if pygame.mouse.get_pressed(num_buttons=3)[0]:
+                self.button_surface.fill(self.fill_colors['pressed'])
+
+                if not self.clicked:
+                    print(self.clicked)
+                    self.clicked = True
+                    self.on_click_function()
+                    print(self.clicked)
+            else:
+                pass
+                #self.clicked = False  # Reset the clicked flag when the mouse is released
+
+        # Render button
+        x = (self.button_rect.width - self.button_text.get_rect().width) * 1/2
+        y = (self.button_rect.height - self.button_text.get_rect().height) * 1/2
+
+        self.button_surface.blit(self.button_text, [x, y])
+        self.screen.blit(self.button_surface, self.button_rect)
+
 def main():
     pygame.init()
+
+    fps = 60
+    fps_clock = pygame.time.Clock()
 
     # Initialize the screen
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
     menu = Menu(screen)
+    menu.render_main_menu()
+    i = 0
 
     while True:
         for event in pygame.event.get():
@@ -118,8 +181,15 @@ def main():
                 pygame.quit()
                 sys.exit()
 
+        # Main menu logic
+        if menu.current_menu == "main menu":
+            if menu.main_menu.button_easy.clicked == True:
+                i += 1
+                print(f"Pressed {i} times")
+
         menu.render_main_menu()
         pygame.display.update()
+        fps_clock.tick(fps)
 
 if __name__ == '__main__':
     main()
