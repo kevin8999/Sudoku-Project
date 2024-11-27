@@ -15,142 +15,159 @@ class Menu:
         - Sudoku screen
         - Game over (win and lose)
     '''
-    def __init__(self, screen):
+    def __init__(self, screen, font_color=(0,0,0), background_color=(255,255,255)):
         self.screen = screen
-        self.font_color = (0, 0, 0) # black
-        self.background_color = (255, 255, 255) # white
+        self.font_color = font_color
+        self.background_color = background_color
 
         # Checks the current menu that Menu is on
-        self.current_menu = "main menu"
+        self.current_menu = ""
 
-    def create_main_menu(self):
+    def render_text(self, text: str, font_size: int, pos: (int, int), font_family=None):
+        '''
+        Render text at position (x, y) with a specific font size
+        '''
+        # Create font of text
+        font = pygame.font.Font(font_family, font_size)
+        img = font.render(text, True, self.font_color)
+
+        # Display text to screen
+        x, y = pos
+        self.screen.blit(img, (x, y))
+
+    def get_img_size(self, text: str, font_size: int, font_family=None):
+        # Get the size of a text box's image
+        font = pygame.font.Font(font_family, font_size)
+        img = font.render(text, True, self.font_color)
+
+        return img.get_width(), img.get_height()
+
+
+class MainMenu(Menu):
+    """
+    Display the main menu (or starting menu) of the game when MainMenu.render() is called
+
+    Parameters:
+        font_size: changes the font size of the title. Default: 70px
+
+    Returns:
+        None
+    """
+
+    def __init__(self, screen, button_font_size=30):
+        super().__init__(screen)
+
+        self.title = "Welcome to Sudoku!"
+        self.select_game_mode = "Select Game Mode:"
+        self.button_font_size = button_font_size
+
+    def render(self):
         self.current_menu = "main menu"
 
         self.screen.fill(self.background_color)
 
-        # Render text of main menu
-        self.main_menu = self.MainMenu(self.screen, self.font_color, self.background_color, self.button_font_size)
-        self.main_menu.render_title()
-        self.main_menu.render_selection_difficulty()
-        self.main_menu.create_buttons()
+        ##### TITLE #####
 
-    class MainMenu:
-        """
-        Display the main menu (or starting menu) of the game when called.
+        # Render title in the center (for x) and in the top quarter (for y)
+        img_width, img_height = self.get_img_size(text=self.title, font_size=70)
 
-        Parameters:
-            font_size: changes the font size of the title. Default: 70px
+        x = (self.screen.get_width() - img_width) / 2
+        y = (self.screen.get_height() - img_height) / 4
 
-        Returns:
-            None
-        """
+        self.render_text(
+            text = self.title,
+            font_size = 70,
+            pos = (x, y),
+            font_family = None
+        )
 
-        def __init__(self, screen, font_color, background_color, button_font_size):
-            self.font_color = font_color
-            self.background_color = background_color
-            self.screen = screen
+        ##### DIFFICULTY SELECTION #####
+        # Render difficulty selection in the center (for x) and in the middle (for y)
+        img_width, img_height = self.get_img_size(text=self.select_game_mode, font_size=50)
 
-            self.title = "Welcome to Sudoku!"
-            self.select_game_mode = "Select Game Mode:"
-            self.button_font_size = button_font_size
+        x = (self.screen.get_width() - img_width) / 2
+        y = (self.screen.get_height() - img_height) / 2
 
-            self.create_buttons()
+        self.render_text(
+            text = self.select_game_mode,
+            font_size = 50,
+            pos = (x, y),
+            font_family = None
+        )
 
-        def render_title(self, font_size=70) -> None:
-            """
-            Renders title to screen
-            """
+        # Create buttons for easy, medium, and hard
+        self.create_buttons()
+    
+    def create_buttons(self):
+        height = self.button_font_size * 1.25
+        width = 100
 
-            # Create font of title
-            font = pygame.font.Font(None, font_size)
-            img = font.render(self.title, True, self.font_color)
+        self.button_easy = Button(
+            screen=self.screen,
+            x=(self.screen.get_width() * 1/4) - 0.5*width,
+            y=(self.screen.get_height() * 3/4) - height,
+            width=width,
+            height=self.button_font_size * 1.25,
+            button_text="Easy",
+            on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
+        )
 
-            # Render title in the center (for x) and in the top quarter (for y)
-            x = (self.screen.get_width() - img.get_width()) / 2
-            y = (self.screen.get_height() - img.get_height()) / 4
+        self.button_medium = Button(
+            screen=self.screen,
+            x=(self.screen.get_width() * 1/2) - 0.5*width,
+            y=(self.screen.get_height() * 3/4) - height,
+            width=width,
+            height=self.button_font_size * 1.25,
+            button_text="Medium",
+            on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
+        )
 
-            self.screen.blit(img, (x, y))
+        self.button_hard = Button(
+            screen=self.screen,
+            x=(self.screen.get_width() * 3/4) - 0.5*width,
+            y=(self.screen.get_height() * 3/4) - height,
+            width=width,
+            height=self.button_font_size * 1.25,
+            button_text="Hard",
+            on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
+        )
 
-        def render_selection_difficulty(self, font_size=50) -> None:
-            """
-            Display the difficulty selection text and buttons for user to click
-            """
+        # Draw buttons to screen
+        self.button_easy.draw()
+        self.button_medium.draw()
+        self.button_hard.draw()
 
-            # Create font of text
-            font = pygame.font.Font(None, font_size)
-            img = font.render(self.select_game_mode, True, self.font_color)
+    def set_menu(self, Parent, new_menu):
+        Parent.current_menu = new_menu
 
-            # Render text in the center (for x and y)
-            x = (self.screen.get_width() - img.get_width()) / 2
-            y = (self.screen.get_height() - img.get_height()) / 2
+class SudokuMenu(Menu):
+    # Draws sudoku board and menu buttons below sudoku board
+    def __init__(self, difficulty):
+        self.difficulty = difficulty
 
-            self.screen.blit(img, (x, y))
-        
-        def create_buttons(self):
-            height = self.button_font_size * 1.25
-            width = 100
-            self.button_easy = Button(
-                screen=self.screen,
-                x=(self.screen.get_width() * 1/4) - 0.5*width,
-                y=(self.screen.get_height() * 3/4) - height,
-                width=width,
-                height=self.button_font_size * 1.25,
-                button_text="Easy",
-                on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
-            )
+class GameOverMenu(Menu):
+    def __init__(self, user_won: bool):
+        self.user_won = user_won
 
-            self.button_medium = Button(
-                screen=self.screen,
-                x=(self.screen.get_width() * 1/2) - 0.5*width,
-                y=(self.screen.get_height() * 3/4) - height,
-                width=width,
-                height=self.button_font_size * 1.25,
-                button_text="Medium",
-                on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
-            )
+    def render_text(self, font_size=30):
+        '''
+        Renders game over text to user. The game over text will depend on if the user won or lost
+        '''
+        text = ''
+        if user_won:
+            text = 'Game Won!'
+        else:
+            text = 'Game Over :('
 
-            self.button_hard = Button(
-                screen=self.screen,
-                x=(self.screen.get_width() * 3/4) - 0.5*width,
-                y=(self.screen.get_height() * 3/4) - height,
-                width=width,
-                height=self.button_font_size * 1.25,
-                button_text="Hard",
-                on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
-            )
+        # Create font of text
+        font = pygame.font.Font(None, font_size)
+        img = font.render(text, True, text)
 
-            self.button_easy.draw()
-            self.button_medium.draw()
-            self.button_hard.draw()
+        # Render title in the center (for x) and in the top quarter (for y)
+        x = (self.screen.get_width() - img.get_width()) / 2
+        y = (self.screen.get_height() - img.get_height()) / 4
 
-    class Sudoku:
-        # Draws sudoku board and menu buttons below sudoku board
-        def __init__(self):
-            pass
-
-    class GameOver:
-        def __init__(self, user_won: bool):
-            self.user_won = user_won
-
-        def render_text(self, font_size=30):
-            '''
-            Renders game over text to user. The game over text will depend on if the user won or lost
-            '''
-            text = ''
-            if user_won:
-                text = 'Game Won!'
-            else:
-                text = 'Game Over :('
-
-            # Create font of text
-            font = pygame.font.Font(None, font_size)
-            img = font.render(text, True, text)
-
-            # Render title in the center (for x) and in the top quarter (for y)
-            x = (self.screen.get_width() - img.get_width()) / 2
-            y = (self.screen.get_height() - img.get_height()) / 4
-
-            self.screen.blit(img, (x, y))
+        self.screen.blit(img, (x, y))
 
 def test_function(difficulty):
     print(difficulty)
@@ -240,8 +257,10 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
     menu = Menu(screen)
-    menu.create_main_menu()
-    i = 0
+    menu.current_menu = 'main menu'
+
+    main_menu = MainMenu(screen)
+    main_menu.render()
 
     while True:
         for event in pygame.event.get():
@@ -250,9 +269,9 @@ def main():
                 sys.exit()
 
             if menu.current_menu == 'main menu':
-                menu.main_menu.button_easy.process(event)
-                menu.main_menu.button_medium.process(event)
-                menu.main_menu.button_hard.process(event)
+                main_menu.button_easy.process(event)
+                main_menu.button_medium.process(event)
+                main_menu.button_hard.process(event)
 
         """
         LOGIC FOR ALL MENUS
@@ -263,15 +282,15 @@ def main():
         # Main menu logic
         if menu.current_menu == "main menu":
             # Check if user clicked easy, medium, or hard button
-            if menu.main_menu.button_easy.clicked == True:
-                menu.main_menu.button_easy.clicked = False
-                menu.main_menu.button_easy.run('easy')
-            elif menu.main_menu.button_medium.clicked == True:
-                menu.main_menu.button_medium.clicked = False
-                menu.main_menu.button_medium.run('medium')
-            elif menu.main_menu.button_hard.clicked == True:
-                menu.main_menu.button_hard.clicked = False
-                menu.main_menu.button_hard.run('hard')
+            if main_menu.button_easy.clicked == True:
+                main_menu.button_easy.clicked = False
+                sudoku_menu = SudokuMenu('easy')
+            elif main_menu.button_medium.clicked == True:
+                main_menu.button_medium.clicked = False
+                sudoku_menu = SudokuMenu('medium')
+            elif main_menu.button_hard.clicked == True:
+                main_menu.button_hard.clicked = False
+                sudoku_menu = SudokuMenu('hard')
 
         # Sudoku board
         elif menu.current_menu == 'sudoku board':
