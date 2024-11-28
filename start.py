@@ -55,6 +55,7 @@ class MainMenu(Menu):
     Display the main menu (or starting menu) of the game when MainMenu.render() is called
 
     Parameters:
+        screen: the screen that MainMenu will modify
         font_size: changes the font size of the title. Default: 70px
 
     Returns:
@@ -112,7 +113,7 @@ class MainMenu(Menu):
         width = 100
 
         # Easy button
-        self.button_easy = Button(
+        self.easy_button = Button(
             screen=self.screen,
             x=(self.screen.get_width() * 1/4) - 0.5*width,
             y=(self.screen.get_height() * 3/4) - height,
@@ -122,7 +123,7 @@ class MainMenu(Menu):
         )
 
         # Medium button
-        self.button_medium = Button(
+        self.medium_button = Button(
             screen=self.screen,
             x=(self.screen.get_width() * 1/2) - 0.5*width,
             y=(self.screen.get_height() * 3/4) - height,
@@ -131,7 +132,8 @@ class MainMenu(Menu):
             button_text="Medium"
         )
 
-        self.button_hard = Button(
+        # Hard button
+        self.hard_button = Button(
             screen=self.screen,
             x=(self.screen.get_width() * 3/4) - 0.5*width,
             y=(self.screen.get_height() * 3/4) - height,
@@ -141,10 +143,11 @@ class MainMenu(Menu):
         )
 
         # Draw buttons to screen
-        self.button_easy.draw()
-        self.button_medium.draw()
-        self.button_hard.draw()
+        self.easy_button.draw()
+        self.medium_button.draw()
+        self.hard_button.draw()
 
+    # NOTE: this method is currently unused. Consider removing later
     @classmethod
     def set_menu(cls, menu):
         cls.current_menu = menu
@@ -180,6 +183,7 @@ class SudokuMenu(Menu):
         btn_y = self.height + (self.difference / 2)
         font_size = 30
 
+        # Reset button
         self.reset_button = Button(
             screen = self.screen,
             x = (0.25*self.width) - (0.5*btn_width),
@@ -190,6 +194,7 @@ class SudokuMenu(Menu):
             font_size = font_size
         )
 
+        # Restart button
         self.restart_button = Button(
             screen = self.screen,
             x = (0.5*self.width) - (0.5*btn_width),
@@ -200,6 +205,7 @@ class SudokuMenu(Menu):
             font_size = font_size
         )
 
+        # Exit button
         self.exit_button = Button(
             screen = self.screen,
             x = (0.75*self.width) - (0.5*btn_width),
@@ -301,6 +307,7 @@ class Button:
         # Draw the button
         self.button_surface = pygame.Surface((self.width, self.height))
         self.button_surface.fill(self.fill_colors['normal'])
+        self.button_rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         # Create text for button
         font = pygame.font.Font(None, self.font_size)
@@ -309,8 +316,6 @@ class Button:
         # Calculate text position to center it within the button
         self.text_x = (self.width - self.img.get_width()) // 2
         self.text_y = (self.height - self.img.get_height()) // 2
-
-        self.button_rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         # Permanently assign x and y to take img height and width into consideration
         self.x = self.x - self.img.get_width()
@@ -331,7 +336,7 @@ class Button:
         if self.button_rect.collidepoint(mouse_pos):
             self.button_surface.fill(self.fill_colors['hover'])
 
-            # If clicked, color the button as if it were pressed
+            # If clicked with left mouse button, color the button to show that it is being pressed
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1 and self.button_rect.collidepoint(event.pos):
                     self.button_surface.fill(self.fill_colors['pressed'])
@@ -385,9 +390,9 @@ def main():
             '''
 
             if menu.current_menu == 'main menu':
-                main_menu.button_easy.process(event)
-                main_menu.button_medium.process(event)
-                main_menu.button_hard.process(event)
+                main_menu.easy_button.process(event)
+                main_menu.medium_button.process(event)
+                main_menu.hard_button.process(event)
 
             elif menu.current_menu == 'sudoku board':
                 sudoku_menu.reset_button.process(event)
@@ -411,8 +416,8 @@ def main():
         # Main menu logic
         if menu.current_menu == "main menu":
             # Check if user clicked easy, medium, or hard button
-            if main_menu.button_easy.clicked == True:
-                main_menu.button_easy.clicked = False
+            if main_menu.easy_button.clicked == True:
+                main_menu.easy_button.clicked = False
 
                 # Switch to Sudoku board and set difficulty to 'EASY'
                 menu.reset_screen()
@@ -421,8 +426,8 @@ def main():
                 sudoku_menu.render_board()
                 sudoku_menu.render_menu()
 
-            elif main_menu.button_medium.clicked == True:
-                main_menu.button_medium.clicked = False
+            elif main_menu.medium_button.clicked == True:
+                main_menu.medium_button.clicked = False
                 
                 # Switch to Sudoku board and set difficulty to 'MEDIUM'
                 menu.reset_screen()
@@ -431,8 +436,8 @@ def main():
                 sudoku_menu.render_board()
                 sudoku_menu.render_menu()
 
-            elif main_menu.button_hard.clicked == True:
-                main_menu.button_hard.clicked = False
+            elif main_menu.hard_button.clicked == True:
+                main_menu.hard_button.clicked = False
 
                 # Switch to Sudoku board and set difficulty to 'HARD'
                 menu.reset_screen()
