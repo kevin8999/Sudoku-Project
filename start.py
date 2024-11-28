@@ -178,7 +178,7 @@ class Sudoku(Menu):
 
         self.reset_button = Button(
             screen = self.screen,
-            x = 0.25 * self.width,
+            x = (0.25*self.width) - (0.5*btn_width),
             y = btn_y,
             width = btn_width,
             height = btn_height,
@@ -188,7 +188,7 @@ class Sudoku(Menu):
 
         self.restart_button = Button(
             screen = self.screen,
-            x = 0.5 * self.width,
+            x = (0.5*self.width) - (0.5*btn_width),
             y = btn_y,
             width = btn_width,
             height = btn_height,
@@ -198,7 +198,7 @@ class Sudoku(Menu):
 
         self.exit_button = Button(
             screen = self.screen,
-            x = 0.75 * self.width,
+            x = (0.75*self.width) - (0.5*btn_width),
             y = btn_y,
             width = btn_width,
             height = btn_height,
