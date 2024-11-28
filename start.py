@@ -7,6 +7,7 @@ import sys
 
 # See constants.py for more information
 from constants import *
+from Board import Board
 
 
 class Menu:
@@ -117,8 +118,7 @@ class MainMenu(Menu):
             y=(self.screen.get_height() * 3/4) - height,
             width=width,
             height=self.button_font_size * 1.25,
-            button_text="Easy",
-            on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
+            button_text="Easy"
         )
 
         # Medium button
@@ -128,8 +128,7 @@ class MainMenu(Menu):
             y=(self.screen.get_height() * 3/4) - height,
             width=width,
             height=self.button_font_size * 1.25,
-            button_text="Medium",
-            on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
+            button_text="Medium"
         )
 
         self.button_hard = Button(
@@ -138,8 +137,7 @@ class MainMenu(Menu):
             y=(self.screen.get_height() * 3/4) - height,
             width=width,
             height=self.button_font_size * 1.25,
-            button_text="Hard",
-            on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
+            button_text="Hard"
         )
 
         # Draw buttons to screen
@@ -147,7 +145,11 @@ class MainMenu(Menu):
         self.button_medium.draw()
         self.button_hard.draw()
 
-class Sudoku(Menu):
+    @classmethod
+    def set_menu(cls, menu):
+        cls.current_menu = menu
+
+class SudokuMenu(Menu):
     # Draws sudoku board and menu buttons below sudoku board
     def __init__(self, screen, difficulty):
         super().__init__(screen)
@@ -164,7 +166,9 @@ class Sudoku(Menu):
         elif self.height > self.width:
             self.height = self.width
 
-        # TODO: create board here
+        #Draw board
+        self.board = Board(self.width, self.height, self.screen, self.difficulty)
+        self.board.draw()
 
     def render_menu(self):
         '''
@@ -367,7 +371,7 @@ def main():
     main_menu = MainMenu(screen)
     main_menu.render()
 
-    sudoku = Sudoku(screen, difficulty=None)
+    sudoku_menu = SudokuMenu(screen, difficulty=None)
     game_over_menu = GameOverMenu(screen, user_won=None)
 
     while True:
@@ -386,9 +390,9 @@ def main():
                 main_menu.button_hard.process(event)
 
             elif menu.current_menu == 'sudoku board':
-                sudoku.reset_button.process(event)
-                sudoku.restart_button.process(event)
-                sudoku.exit_button.process(event)
+                sudoku_menu.reset_button.process(event)
+                sudoku_menu.restart_button.process(event)
+                sudoku_menu.exit_button.process(event)
 
             elif menu.current_menu == 'game over win':
                 game_over_menu.user_won = True
@@ -413,33 +417,44 @@ def main():
                 # Switch to Sudoku board and set difficulty to 'EASY'
                 menu.reset_screen()
                 menu.current_menu = 'sudoku board'
-                sudoku.difficulty = 'EASY'
-                sudoku.render_board()
-                sudoku.render_menu()
+                sudoku_menu.difficulty = 'EASY'
+                sudoku_menu.render_board()
+                sudoku_menu.render_menu()
 
             elif main_menu.button_medium.clicked == True:
                 main_menu.button_medium.clicked = False
-                sudoku.difficulty = 'MEDIUM'
+                
+                # Switch to Sudoku board and set difficulty to 'MEDIUM'
+                menu.reset_screen()
+                menu.current_menu = 'sudoku board'
+                sudoku_menu.difficulty = 'MEDIUM'
+                sudoku_menu.render_board()
+                sudoku_menu.render_menu()
 
             elif main_menu.button_hard.clicked == True:
                 main_menu.button_hard.clicked = False
-                sudoku.difficulty = 'HARD'
+
+                # Switch to Sudoku board and set difficulty to 'HARD'
+                menu.reset_screen()
+                menu.current_menu = 'sudoku board'
+                sudoku_menu.difficulty = 'HARD'
+                sudoku_menu.render_board()
+                sudoku_menu.render_menu()
 
         # Sudoku board
         elif menu.current_menu == 'sudoku board':
-            if sudoku.reset_button.clicked == True:
+            if sudoku_menu.reset_button.clicked == True:
                 # TODO: add code to reset board
                 pass
 
-            if sudoku.restart_button.clicked == True:
-                # TODO: add code to take user back to main screen
+            elif sudoku_menu.restart_button.clicked == True:
                 # Take user back to main menu
                 menu.reset_screen()
                 menu.current_menu = 'main menu'
                 main_menu.render()
-                sudoku.restart_button_clicked = False
+                sudoku_menu.restart_button_clicked = False
             
-            if sudoku.exit_button.clicked == True:
+            elif sudoku_menu.exit_button.clicked == True:
                 sys.exit()
 
         # Game over (win screen) logic
