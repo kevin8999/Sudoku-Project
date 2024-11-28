@@ -8,6 +8,7 @@ import sys
 # See constants.py for more information
 from constants import *
 
+
 class Menu:
     '''
     Displays visuals for:
@@ -15,10 +16,11 @@ class Menu:
         - Sudoku screen
         - Game over (win and lose)
     '''
-    def __init__(self, screen, font_color=(0,0,0), background_color=(255,255,255)):
+    def __init__(self, screen, font_color=(0,0,0), background_color=(255,255,255), button_font_size=30):
         self.screen = screen
         self.font_color = font_color
         self.background_color = background_color
+        self.button_font_size = button_font_size
 
         # Checks the current menu that Menu is on
         self.current_menu = ""
@@ -42,6 +44,10 @@ class Menu:
 
         return img.get_width(), img.get_height()
 
+    def reset_screen(self):
+        # Resets screen by filling it all in with the background color
+        self.screen.fill(self.background_color)
+
 
 class MainMenu(Menu):
     """
@@ -59,10 +65,9 @@ class MainMenu(Menu):
 
         self.title = "Welcome to Sudoku!"
         self.select_game_mode = "Select Game Mode:"
-        self.button_font_size = button_font_size
 
     def render(self):
-        self.current_menu = "main menu"
+        Menu.current_menu = "main menu"
 
         self.screen.fill(self.background_color)
 
@@ -99,9 +104,13 @@ class MainMenu(Menu):
         self.create_buttons()
     
     def create_buttons(self):
+        '''
+        Create difficulty level buttons
+        '''
         height = self.button_font_size * 1.25
         width = 100
 
+        # Easy button
         self.button_easy = Button(
             screen=self.screen,
             x=(self.screen.get_width() * 1/4) - 0.5*width,
@@ -112,6 +121,7 @@ class MainMenu(Menu):
             on_click_function=test_function  # TODO: CHANGE SO THAT BUTTONS CAN RUN A GAME
         )
 
+        # Medium button
         self.button_medium = Button(
             screen=self.screen,
             x=(self.screen.get_width() * 1/2) - 0.5*width,
@@ -137,37 +147,63 @@ class MainMenu(Menu):
         self.button_medium.draw()
         self.button_hard.draw()
 
-    def set_menu(self, Parent, new_menu):
-        Parent.current_menu = new_menu
-
 class SudokuMenu(Menu):
     # Draws sudoku board and menu buttons below sudoku board
     def __init__(self, difficulty):
         self.difficulty = difficulty
 
 class GameOverMenu(Menu):
-    def __init__(self, user_won: bool):
+    def __init__(self, screen, user_won: bool):
+        super().__init__(screen)
         self.user_won = user_won
 
-    def render_text(self, font_size=30):
+    def render(self, font_size=30):
         '''
         Renders game over text to user. The game over text will depend on if the user won or lost
         '''
         text = ''
-        if user_won:
+        if self.user_won:
             text = 'Game Won!'
         else:
             text = 'Game Over :('
 
         # Create font of text
-        font = pygame.font.Font(None, font_size)
-        img = font.render(text, True, text)
+        img_width, img_height = self.get_img_size(text=text, font_size=70)
 
-        # Render title in the center (for x) and in the top quarter (for y)
-        x = (self.screen.get_width() - img.get_width()) / 2
-        y = (self.screen.get_height() - img.get_height()) / 4
+        x = (self.screen.get_width() - img_width) / 2
+        y = (self.screen.get_height() - img_height) / 4
 
-        self.screen.blit(img, (x, y))
+        # Render text
+        self.render_text(
+            text = text,
+            font_size = 70,
+            pos = (x, y),
+            font_family = None,
+        )
+
+        self.create_buttons()
+
+    def create_buttons(self):
+        height = self.button_font_size * 1.25
+        width = 100
+
+        # Create text of button based on whether the user won or not
+        text = ''
+        if self.user_won:
+            text = 'EXIT'
+        else:
+            text = 'RESTART'
+
+        self.button = Button(
+            screen=self.screen,
+            x=(self.screen.get_width() * 0.5) - 0.5*width,
+            y=(self.screen.get_height() * 0.5) - height,
+            width=width,
+            height=height,
+            button_text=text
+        )
+
+        self.button.draw()
 
 def test_function(difficulty):
     print(difficulty)
@@ -220,6 +256,10 @@ class Button:
         self.screen.blit(self.button_surface, self.button_rect)
 
     def process(self, event):
+        '''
+        Change state of button based on where the mouse is
+        '''
+
         mouse_pos = pygame.mouse.get_pos()
         self.button_surface.fill(self.fill_colors['normal'])
 
@@ -233,19 +273,23 @@ class Button:
                     self.button_surface.fill(self.fill_colors['pressed'])
                     self.clicked = True
 
-            if event.type == pygame.MOUSEBUTTONUP:
+            elif event.type == pygame.MOUSEBUTTONUP:
                 if self.clicked and self.button_rect.collidepoint(event.pos):
                     # Check if button has already been clicked. If it has, do not run the function
                     self.clicked = False
-                    print(self.clicked)
+                    self.run()
 
         # Render button (useful in case the user hovers over the button and the fill color must be changed)
         self.button_surface.blit(self.img, (self.text_x, self.text_y))
         self.screen.blit(self.button_surface, self.button_rect)
 
     def run(self, *args):
-        # Run the function set by self.on_click_function()
-        self.on_click_function(*args)
+        try:
+            # Run the function if a function exists
+            self.on_click_function(*args)
+        except:
+            print("No function found.")
+
 
 def main():
     pygame.init()
@@ -259,8 +303,12 @@ def main():
     menu = Menu(screen)
     menu.current_menu = 'main menu'
 
+    # Define other menus
     main_menu = MainMenu(screen)
     main_menu.render()
+
+    sudoku_menu = SudokuMenu(difficulty=None)
+    game_over_menu = GameOverMenu(screen, user_won=None)
 
     while True:
         for event in pygame.event.get():
@@ -268,10 +316,28 @@ def main():
                 pygame.quit()
                 sys.exit()
 
+            '''
+            Detects if a button in the current menu is being pressed, hovered over, or neither.
+            '''
+
             if menu.current_menu == 'main menu':
                 main_menu.button_easy.process(event)
                 main_menu.button_medium.process(event)
                 main_menu.button_hard.process(event)
+
+            elif menu.current_menu == 'sudoku menu':
+                pass
+
+            elif menu.current_menu == 'sudoku board':
+                pass
+
+            elif menu.current_menu == 'game over win':
+                game_over_menu.user_won = True
+                game_over_menu.button.process(event)
+            
+            elif menu.current_menu == 'game over lose':
+                game_over_menu.user_won = False
+                game_over_menu.button.process(event)
 
         """
         LOGIC FOR ALL MENUS
@@ -284,13 +350,19 @@ def main():
             # Check if user clicked easy, medium, or hard button
             if main_menu.button_easy.clicked == True:
                 main_menu.button_easy.clicked = False
-                sudoku_menu = SudokuMenu('easy')
+                sudoku_menu.difficulty = 'EASY'
+
+                # Render game over menu
+                menu.reset_screen()
+                menu.current_menu = 'game over lose'
+                game_over_menu.user_won = False
+                game_over_menu.render()
             elif main_menu.button_medium.clicked == True:
                 main_menu.button_medium.clicked = False
-                sudoku_menu = SudokuMenu('medium')
+                sudoku_menu.difficulty = 'MEDIUM'
             elif main_menu.button_hard.clicked == True:
                 main_menu.button_hard.clicked = False
-                sudoku_menu = SudokuMenu('hard')
+                sudoku_menu.difficulty = 'HARD'
 
         # Sudoku board
         elif menu.current_menu == 'sudoku board':
@@ -298,11 +370,19 @@ def main():
 
         # Game over (win screen) logic
         elif menu.current_menu == 'game over win':
-            pass
+            # Check if user presses exit button
+            if game_over_menu.button.clicked == True:
+                sys.exit()
         
         # Game over (lose screen) logic
         elif menu.current_menu == 'game over lose':
-            pass
+            # Check if user presses restart button
+            if game_over_menu.button.clicked == True:
+                # Render main menu
+                menu.reset_screen()
+                menu.current_menu = 'main menu'
+                main_menu.render()
+                game_over_menu.clicked = False
 
         pygame.display.flip()
         fps_clock.tick(fps)
