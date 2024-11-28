@@ -410,9 +410,9 @@ def main():
             if main_menu.button_easy.clicked == True:
                 main_menu.button_easy.clicked = False
 
+                # Switch to Sudoku board and set difficulty to 'EASY'
                 menu.reset_screen()
                 menu.current_menu = 'sudoku board'
-
                 sudoku.difficulty = 'EASY'
                 sudoku.render_board()
                 sudoku.render_menu()
@@ -420,6 +420,7 @@ def main():
             elif main_menu.button_medium.clicked == True:
                 main_menu.button_medium.clicked = False
                 sudoku.difficulty = 'MEDIUM'
+
             elif main_menu.button_hard.clicked == True:
                 main_menu.button_hard.clicked = False
                 sudoku.difficulty = 'HARD'
@@ -432,7 +433,11 @@ def main():
 
             if sudoku.restart_button.clicked == True:
                 # TODO: add code to take user back to main screen
-                pass
+                # Take user back to main menu
+                menu.reset_screen()
+                menu.current_menu = 'main menu'
+                main_menu.render()
+                sudoku.restart_button_clicked = False
             
             if sudoku.exit_button.clicked == True:
                 sys.exit()
