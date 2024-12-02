@@ -11,6 +11,7 @@ class Cell:
         self.selected = False
         self.width = width
         self.height = height
+        self.is_initial = value != 0
 
 
     #Setter for this cell’s value
@@ -35,7 +36,8 @@ class Cell:
 
         if self.selected:
             pygame.draw.rect(self.screen, (255,0,0), (x, y, self.width, self.height), 3)
-
+            
+            
         if self.value != 0:
             text = font.render(str(self.value), 1, (0,0,0))
             self.screen.blit(text, (x + self.width//2 - text.get_width()//2,
@@ -44,3 +46,11 @@ class Cell:
         elif self.sketched_value != 0:
             text = font.render(str(self.sketched_value), 1, (120,120,120))
             self.screen.blit(text, (x+5, y+5))
+    
+    def erase(self):
+        x = self.col * self.width
+        y = self.row * self.height
+        
+        self.selected = False
+        pygame.draw.rect(self.screen, (255, 255, 255), (x, y, self.width, self.height), 3)
+        

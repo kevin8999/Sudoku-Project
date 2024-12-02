@@ -406,80 +406,155 @@ def main():
             elif menu.current_menu == 'game over lose':
                 game_over_menu.user_won = False
                 game_over_menu.button.process(event)
-
-        """
-        LOGIC FOR ALL MENUS
-        
-        Each nested if statement ensures that if a button is clicked once, it is run once.
-        """
-
-        # Main menu logic
-        if menu.current_menu == "main menu":
-            # Check if user clicked easy, medium, or hard button
-            if main_menu.easy_button.clicked == True:
-                main_menu.easy_button.clicked = False
-
-                # Switch to Sudoku board and set difficulty to 'EASY'
-                menu.reset_screen()
-                menu.current_menu = 'sudoku board'
-                sudoku_menu.difficulty = 'EASY'
-                sudoku_menu.render_board()
-                sudoku_menu.render_menu()
-
-            elif main_menu.medium_button.clicked == True:
-                main_menu.medium_button.clicked = False
-                
-                # Switch to Sudoku board and set difficulty to 'MEDIUM'
-                menu.reset_screen()
-                menu.current_menu = 'sudoku board'
-                sudoku_menu.difficulty = 'MEDIUM'
-                sudoku_menu.render_board()
-                sudoku_menu.render_menu()
-
-            elif main_menu.hard_button.clicked == True:
-                main_menu.hard_button.clicked = False
-
-                # Switch to Sudoku board and set difficulty to 'HARD'
-                menu.reset_screen()
-                menu.current_menu = 'sudoku board'
-                sudoku_menu.difficulty = 'HARD'
-                sudoku_menu.render_board()
-                sudoku_menu.render_menu()
-
-        # Sudoku board
-        elif menu.current_menu == 'sudoku board':
-            if sudoku_menu.reset_button.clicked == True:
-                # TODO: add code to reset board
-                pass
-
-            elif sudoku_menu.restart_button.clicked == True:
-                # Take user back to main menu
-                menu.reset_screen()
-                menu.current_menu = 'main menu'
-                main_menu.render()
-                sudoku_menu.restart_button_clicked = False
             
-            elif sudoku_menu.exit_button.clicked == True:
-                sys.exit()
-
-        # Game over (win screen) logic
-        elif menu.current_menu == 'game over win':
-            # Check if user presses exit button
-            if game_over_menu.button.clicked == True:
-                sys.exit()
-        
-        # Game over (lose screen) logic
-        elif menu.current_menu == 'game over lose':
-            # Check if user presses restart button
-            if game_over_menu.button.clicked == True:
-                # Render main menu
-                menu.reset_screen()
-                menu.current_menu = 'main menu'
-                main_menu.render()
-                game_over_menu.clicked = False
-
-        pygame.display.flip()
-        fps_clock.tick(fps)
+            # """
+            #       LOGIC FOR ALL MENUS
+            #
+            #       Each nested if statement ensures that if a button is clicked once, it is run once.
+            # """
+        # Main menu logic
+            if menu.current_menu == "main menu":
+                # Check if user clicked easy, medium, or hard button
+                if main_menu.easy_button.clicked == True:
+                    main_menu.easy_button.clicked = False
+    
+                    # Switch to Sudoku board and set difficulty to 'EASY'
+                    menu.reset_screen()
+                    menu.current_menu = 'sudoku board'
+                    sudoku_menu.difficulty = 'EASY'
+                    sudoku_menu.render_board()
+                    sudoku_menu.render_menu()
+                    
+                    
+                    
+    
+                elif main_menu.medium_button.clicked == True:
+                    main_menu.medium_button.clicked = False
+                    
+                    # Switch to Sudoku board and set difficulty to 'MEDIUM'
+                    menu.reset_screen()
+                    menu.current_menu = 'sudoku board'
+                    sudoku_menu.difficulty = 'MEDIUM'
+                    sudoku_menu.render_board()
+                    sudoku_menu.render_menu()
+                    
+    
+                elif main_menu.hard_button.clicked == True:
+                    main_menu.hard_button.clicked = False
+    
+                    # Switch to Sudoku board and set difficulty to 'HARD'
+                    menu.reset_screen()
+                    menu.current_menu = 'sudoku board'
+                    sudoku_menu.difficulty = 'HARD'
+                    sudoku_menu.render_board()
+                    sudoku_menu.render_menu()
+    
+            # Sudoku board
+            elif menu.current_menu == 'sudoku board':
+                
+                if sudoku_menu.reset_button.clicked == True:
+                    sudoku_menu.board.reset_to_original()
+                    sudoku_menu.board.draw()
+                    sudoku_menu.reset_button.clicked = False
+                    
+    
+                elif sudoku_menu.restart_button.clicked == True:
+                    # Take user back to main menu
+                    menu.reset_screen()
+                    menu.current_menu = 'main menu'
+                    main_menu.render()
+                    sudoku_menu.restart_button_clicked = False
+                
+                elif sudoku_menu.exit_button.clicked == True:
+                    sys.exit()
+                    
+                
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if sudoku_menu.board.selected_cell is not None:
+                        sudoku_menu.board.selected_cell.erase()
+                
+                        sudoku_menu.board.drawgrid()
+                    if sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0]) is not None:
+                        sudoku_menu.board.select(sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0])[0],sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0])[1])
+    
+                        
+                elif event.type == pygame.KEYDOWN:
+                    if sudoku_menu.board.selected_cell is None:
+                        sudoku_menu.board.select(4, 4)
+                    
+    
+                    if event.key == pygame.K_UP:
+                        sudoku_menu.board.selected_cell.erase()
+                        sudoku_menu.board.selected_cell.selected = False
+                        sudoku_menu.board.drawgrid()
+                        sudoku_menu.board.select(sudoku_menu.board.selected_cell.row - 1, sudoku_menu.board.selected_cell.col)
+                        
+                    elif event.key == pygame.K_DOWN:
+                        sudoku_menu.board.selected_cell.erase()
+                        sudoku_menu.board.selected_cell.selected = False
+                        sudoku_menu.board.drawgrid()
+                        sudoku_menu.board.select(sudoku_menu.board.selected_cell.row + 1, sudoku_menu.board.selected_cell.col)
+                    
+                    elif event.key == pygame.K_LEFT:
+                        sudoku_menu.board.selected_cell.erase()
+                        sudoku_menu.board.selected_cell.selected = False
+                        sudoku_menu.board.drawgrid()
+                        sudoku_menu.board.select(sudoku_menu.board.selected_cell.row, sudoku_menu.board.selected_cell.col - 1)
+                    
+                    elif event.key == pygame.K_RIGHT:
+                        sudoku_menu.board.selected_cell.erase()
+                        sudoku_menu.board.selected_cell.selected = False
+                        sudoku_menu.board.drawgrid()
+                        sudoku_menu.board.select(sudoku_menu.board.selected_cell.row, sudoku_menu.board.selected_cell.col + 1)
+                        
+                    elif event.key == pygame.K_RETURN:
+                        if sudoku_menu.board.selected_cell is not None:
+                            if sudoku_menu.board.selected_cell.value == 0:
+                                if sudoku_menu.board.selected_cell.sketched_value != 0:
+                                    sudoku_menu.board.selected_cell.value = sudoku_menu.board.selected_cell.sketched_value
+                                    sudoku_menu.board.selected_cell.sketched_value = 0
+                                    sudoku_menu.board.draw()
+                                    
+                    elif event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
+                                       pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
+                        if sudoku_menu.board.selected_cell is not None:
+                            if sudoku_menu.board.selected_cell.value == 0:
+                                char = chr(event.key)
+                                sudoku_menu.board.sketch(int(char))
+                                sudoku_menu.board.draw()
+                                
+                if sudoku_menu.board.is_full == True:
+                    if sudoku_menu.board.check_board() == True:
+                        menu.current_menu = 'game over win'
+                    else:
+                        menu.current_menu = 'game over lose'
+                    
+                    
+            
+            
+            
+            
+            
+            
+            # Game over (win screen) logic
+            elif menu.current_menu == 'game over win':
+                # Check if user presses exit button
+                if game_over_menu.button.clicked == True:
+                    sys.exit()
+            
+            
+            # Game over (lose screen) logic
+            elif menu.current_menu == 'game over lose':
+                # Check if user presses restart button
+                if game_over_menu.button.clicked == True:
+                    # Render main menu
+                    menu.reset_screen()
+                    menu.current_menu = 'main menu'
+                    main_menu.render()
+                    game_over_menu.clicked = False
+                
+            pygame.display.flip()
+            fps_clock.tick(fps)
 
 if __name__ == '__main__':
     main()
