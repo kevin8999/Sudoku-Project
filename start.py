@@ -424,9 +424,6 @@ def main():
                     sudoku_menu.difficulty = 'EASY'
                     sudoku_menu.render_board()
                     sudoku_menu.render_menu()
-                    
-                    
-                    
     
                 elif main_menu.medium_button.clicked == True:
                     main_menu.medium_button.clicked = False
@@ -437,7 +434,6 @@ def main():
                     sudoku_menu.difficulty = 'MEDIUM'
                     sudoku_menu.render_board()
                     sudoku_menu.render_menu()
-                    
     
                 elif main_menu.hard_button.clicked == True:
                     main_menu.hard_button.clicked = False
@@ -456,8 +452,7 @@ def main():
                     sudoku_menu.board.reset_to_original()
                     sudoku_menu.board.screen.fill(BG_COLOR)
                     sudoku_menu.board.draw()
-                    sudoku_menu.reset_button.clicked = False
-                    
+                    sudoku_menu.reset_button.clicked = False   
     
                 elif sudoku_menu.restart_button.clicked == True:
                     # Take user back to main menu
@@ -469,11 +464,11 @@ def main():
                 elif sudoku_menu.exit_button.clicked == True:
                     sys.exit()
                     
-                
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if sudoku_menu.board.selected_cell is not None:
                         sudoku_menu.board.selected_cell.erase()
                 
+                        menu.reset_screen()
                         sudoku_menu.board.drawgrid()
                     if sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0]) is not None:
                         sudoku_menu.board.select(sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0])[0],sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0])[1])
@@ -487,24 +482,28 @@ def main():
                     if event.key == pygame.K_UP:
                         sudoku_menu.board.selected_cell.erase()
                         sudoku_menu.board.selected_cell.selected = False
+                        menu.reset_screen()
                         sudoku_menu.board.drawgrid()
                         sudoku_menu.board.select(sudoku_menu.board.selected_cell.row - 1, sudoku_menu.board.selected_cell.col)
                         
                     elif event.key == pygame.K_DOWN:
                         sudoku_menu.board.selected_cell.erase()
                         sudoku_menu.board.selected_cell.selected = False
+                        menu.reset_screen()
                         sudoku_menu.board.drawgrid()
                         sudoku_menu.board.select(sudoku_menu.board.selected_cell.row + 1, sudoku_menu.board.selected_cell.col)
                     
                     elif event.key == pygame.K_LEFT:
                         sudoku_menu.board.selected_cell.erase()
                         sudoku_menu.board.selected_cell.selected = False
+                        menu.reset_screen()
                         sudoku_menu.board.drawgrid()
                         sudoku_menu.board.select(sudoku_menu.board.selected_cell.row, sudoku_menu.board.selected_cell.col - 1)
                     
                     elif event.key == pygame.K_RIGHT:
                         sudoku_menu.board.selected_cell.erase()
                         sudoku_menu.board.selected_cell.selected = False
+                        menu.reset_screen()
                         sudoku_menu.board.drawgrid()
                         sudoku_menu.board.select(sudoku_menu.board.selected_cell.row, sudoku_menu.board.selected_cell.col + 1)
                         
@@ -514,6 +513,7 @@ def main():
                                 if sudoku_menu.board.selected_cell.sketched_value != 0:
                                     sudoku_menu.board.selected_cell.value = sudoku_menu.board.selected_cell.sketched_value
                                     sudoku_menu.board.selected_cell.sketched_value = 0
+                                    menu.reset_screen()
                                     sudoku_menu.board.draw()
                                     
                     elif event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
@@ -522,6 +522,7 @@ def main():
                             if sudoku_menu.board.selected_cell.value == 0:
                                 char = chr(event.key)
                                 sudoku_menu.board.sketch(int(char))
+                                menu.reset_screen()
                                 sudoku_menu.board.draw()
                                 
                 if sudoku_menu.board.is_full == True:
@@ -530,13 +531,7 @@ def main():
                     else:
                         menu.current_menu = 'game over lose'
                     
-                    
-            
-            
-            
-            
-            
-            
+
             # Game over (win screen) logic
             elif menu.current_menu == 'game over win':
                 # Check if user presses exit button
