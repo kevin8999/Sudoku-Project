@@ -15,8 +15,8 @@ class Board:
         removed_cells = difficulty_cells[difficulty]
         self.board = generate_sudoku(9, removed_cells)
 
-        cell_width = width//9
-        cell_height = height//9
+        cell_width = width/9
+        cell_height = height/9
         for i in range(9):
             row = []
             for j in range(9):
@@ -83,6 +83,7 @@ class Board:
                 if not cell.is_initial:
                     cell.set_cell_value(0)
                     cell.set_sketched_value(0)
+
         
                     
                 

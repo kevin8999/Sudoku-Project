@@ -44,6 +44,9 @@ class Cell:
                                     y + self.height//2 - text.get_height()//2))
 
         elif self.sketched_value != 0:
+            x = self.col * self.width
+            y = self.row * self.height
+            pygame.draw.rect(self.screen, (255, 255, 255), (x+5, y+5, 50, 50), 0)
             text = font.render(str(self.sketched_value), 1, (120,120,120))
             self.screen.blit(text, (x+5, y+5))
     

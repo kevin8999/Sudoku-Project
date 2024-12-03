@@ -454,6 +454,7 @@ def main():
                 
                 if sudoku_menu.reset_button.clicked == True:
                     sudoku_menu.board.reset_to_original()
+                    sudoku_menu.board.screen.fill(BG_COLOR)
                     sudoku_menu.board.draw()
                     sudoku_menu.reset_button.clicked = False
                     
@@ -469,7 +470,7 @@ def main():
                     sys.exit()
                     
                 
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
                     if sudoku_menu.board.selected_cell is not None:
                         sudoku_menu.board.selected_cell.erase()
                 
