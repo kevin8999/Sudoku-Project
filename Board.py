@@ -59,6 +59,7 @@ class Board:
         cell_height = self.height // 9
         if row // cell_width in range(len(self.cells)) and col // cell_height in range (len(self.cells[0])):
             return row // cell_width, col // cell_height
+        self.selected_cell = None
         return None
             
         
