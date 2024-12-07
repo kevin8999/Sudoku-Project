@@ -467,8 +467,6 @@ def main():
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if sudoku_menu.board.selected_cell is not None:
                         sudoku_menu.board.selected_cell.erase()
-                
-                        menu.reset_screen()
                         sudoku_menu.board.drawgrid()
                     if sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0]) is not None:
                         sudoku_menu.board.select(sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0])[0],sudoku_menu.board.click(pygame.mouse.get_pos()[1], pygame.mouse.get_pos()[0])[1])
