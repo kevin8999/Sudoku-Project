@@ -513,6 +513,17 @@ def main():
                                     sudoku_menu.board.selected_cell.sketched_value = 0
                                     menu.reset_screen()
                                     sudoku_menu.board.draw()
+                                    if sudoku_menu.board.is_full():
+                                        if sudoku_menu.board.check_board():
+                                            menu.current_menu = 'game over win'
+                                            menu.reset_screen()
+                                            game_over_menu = GameOverMenu(screen, True)
+                                            game_over_menu.render()
+                                        else:
+                                            menu.current_menu = 'game over lose'
+                                            menu.reset_screen()
+                                            game_over_menu = GameOverMenu(screen, False)
+                                            game_over_menu.render()
                                     
                     elif event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
                                        pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
@@ -523,11 +534,7 @@ def main():
                                 menu.reset_screen()
                                 sudoku_menu.board.draw()
                                 
-                if sudoku_menu.board.is_full == True:
-                    if sudoku_menu.board.check_board() == True:
-                        menu.current_menu = 'game over win'
-                    else:
-                        menu.current_menu = 'game over lose'
+
                     
 
             # Game over (win screen) logic

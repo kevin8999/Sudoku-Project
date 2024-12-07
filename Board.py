@@ -13,7 +13,7 @@ class Board:
 
         difficulty_cells = {"EASY": 30, "MEDIUM": 40, "HARD": 50}
         removed_cells = difficulty_cells[difficulty]
-        self.board = generate_sudoku(9, removed_cells)
+        self.board, self.solvedBoard = generate_sudoku(9, removed_cells)
 
         cell_width = width/9
         cell_height = height/9
@@ -114,26 +114,10 @@ class Board:
     
     def check_board(self):
         # Check rows
-        for row in self.board:
-            if not self.is_valid_group([cell.value for cell in row]):
-                return False
-        
-    
-        for col in range(9):
-            if not self.is_valid_group([self.board[row][col].value for row in range(9)]):
-                return False
-        
-
-        for i in range(0, 9, 3):
-            for j in range(0, 9, 3):
-                box = [self.board[x][y].value for x in range(i, i + 3) for y in range(j, j + 3)]
-                if not self.is_valid_group(box):
+        for row in range(len(self.cells)):
+            for cell in range(len(self.cells[row])):
+                if self.cells[row][cell].value != self.solvedBoard[row][cell]:
                     return False
-        
         return True
-    
-    def is_valid_group(self, group):
-        filled = [num for num in group if num != 0]
-        return len(filled) == len(set(filled)) and all(1 <= num <= 9 for num in filled)
         
     
